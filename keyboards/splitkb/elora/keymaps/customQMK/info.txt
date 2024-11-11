@@ -1,0 +1,3 @@
+9/12/2024 06:42
+moved to full QMK 
+Reason: unable to create custom tap dances, or at least there is ready knowledge on the topic
