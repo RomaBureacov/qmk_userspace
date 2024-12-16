@@ -68,5 +68,10 @@
 #define SPLIT_LAYER_STATE_ENABLE
 #define SPLIT_TRANSPORT_MIRROR // for reactive effects
 // #define RGB_MATRIX_TIMEOUT 300000 // sleep in 5 minutes of inactivity
+
+// Defaults
 #define RGB_MATRIX_DEFAULT_SPD 60
+#define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_BREATHING
+#define RGB_MATRIX_DEFAULT_HUE 0
+
 // TODO: idle lighting?
