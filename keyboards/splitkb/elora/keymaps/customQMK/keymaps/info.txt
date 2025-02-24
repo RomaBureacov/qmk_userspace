@@ -1,0 +1,1 @@
+this folder is intended to be a collection of keymaps such that they can be modularized in a little bit of an easier way

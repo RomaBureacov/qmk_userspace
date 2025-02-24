@@ -1,0 +1,5 @@
+QMK layouts
+https://docs.qmk.fm/feature_layouts
+
+Example layout
+https://github.com/splitkb/qmk_firmware/tree/elora/layouts/default/60_ansi

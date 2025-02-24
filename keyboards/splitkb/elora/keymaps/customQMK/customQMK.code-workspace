@@ -1,7 +1,16 @@
 {
 	"folders": [
 		{
+			"name": "customQMK",
 			"path": "."
+		},
+		{
+			"name": "customQMK_test",
+			"path": "../customQMK_test"
+		},
+		{
+			"name": "layouts",
+			"path": "../../../../../layouts"
 		}
 	],
 	"settings": {}
