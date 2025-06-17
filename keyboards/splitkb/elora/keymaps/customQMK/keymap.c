@@ -20,6 +20,8 @@
 #include "caps_word.h"
 #include "config.h"
 #include "keycodes.h"
+#include "keymap_us.h"
+#include "process_tap_dance.h"
 #include "quantum.h"
 #include "quantum_keycodes.h"
 #include "rgb_matrix.h"
@@ -37,13 +39,13 @@ enum layers {
     _LEFTY_TD_ENGRAM,
     _LEFTY_OS_MO,
     _LEFTY_OS_MO_ENGRAM,
-    _TEMP1, // no ideas yet
     _GAMING_CONTROLS,
     _GAMING_EXTRAS,
     
     // always accessible
     _NUMPAD,
     _FUNCTIONS,
+    _SYMBOL,
 };
 
 enum custom_keycodes {
@@ -142,10 +144,10 @@ void setLED(unsigned int LED_indices[], unsigned int red, unsigned int green, un
 }
 
 bool rgb_matrix_indicators_user() {
-  if (IS_LAYER_ON(_NUMPAD)) setLED((unsigned int[]){9, 10, 11}, 255, 255, 0, 3); // yellow on bottom of right
-  if (IS_LAYER_ON(_FUNCTIONS))  setLED((unsigned int[]){6, 7, 8}, 255, 255, 0, 3); // yellow on top of right
-  if (IS_LAYER_ON(_GAMING_EXTRAS)) setLED((unsigned int[]){0, 1, 2, 3}, 100, 0, 255, 4); // purple on outer rim of left
-  if (IS_LAYER_ON(_TEMP1)) setLED((unsigned int[]){5}, 255, 255, 0, 1); // yellow on LED 5
+  if (IS_LAYER_ON(_NUMPAD))         setLED((unsigned int[]){9, 10, 11}, 255, 255, 0, 3); // yellow on bottom of right
+  if (IS_LAYER_ON(_FUNCTIONS))      setLED((unsigned int[]){6, 7, 8}, 255, 255, 0, 3); // yellow on top of right
+  if (IS_LAYER_ON(_GAMING_EXTRAS))  setLED((unsigned int[]){0, 1, 2, 3}, 100, 0, 255, 4); // purple on outer rim of left
+  if (IS_LAYER_ON(_SYMBOL))          setLED((unsigned int[]){5}, 255, 255, 0, 1); // yellow on LED 5
   return true;
 }
 
@@ -180,6 +182,16 @@ enum {
 
   TD_VD_VU, // volume
 
+  TD_EQL, // PEQL and EQL
+
+  // symbol layer
+  TD_PAREN,
+  TD_CRLBR,
+  TD_SQRBR,
+  TD_ANGBR,
+  TD_SLS,
+  TD_TERN,
+  
 };
 
 tap_dance_action_t tap_dance_actions[] = {
@@ -238,6 +250,16 @@ tap_dance_action_t tap_dance_actions[] = {
 
   [TD_VD_VU] = ACTION_TAP_DANCE_DOUBLE(KC_VOLD, KC_VOLU),
 
+  [TD_EQL] = ACTION_TAP_DANCE_DOUBLE(KC_PEQL, KC_EQL),
+
+  // symbol layer
+  [TD_PAREN] = ACTION_TAP_DANCE_DOUBLE(KC_LPRN, KC_RPRN),
+  [TD_CRLBR] = ACTION_TAP_DANCE_DOUBLE(KC_LCBR, KC_RCBR),
+  [TD_SQRBR] = ACTION_TAP_DANCE_DOUBLE(KC_LBRC, KC_RBRC),
+  [TD_ANGBR] = ACTION_TAP_DANCE_DOUBLE(KC_LABK, KC_RABK),
+  [TD_SLS] = ACTION_TAP_DANCE_DOUBLE(KC_SLSH, KC_BSLS),
+  [TD_TERN] = ACTION_TAP_DANCE_DOUBLE(KC_QUES, KC_COLN),
+
 };
 
 // Swap hands
@@ -281,8 +303,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       KC_ESC  , KC_1 ,  KC_2   ,  KC_3  ,   KC_4 ,   KC_5 ,               KC_0   ,       KC_0       ,          KC_6 ,  KC_7 ,  KC_8 ,   KC_9 ,  KC_0 , KC_BSPC,
       KC_TAB  , KC_Q ,  KC_W   ,  KC_E  ,   KC_R ,   KC_T ,               KC_0   ,       KC_0       ,          KC_Y ,  KC_U ,  KC_I ,   KC_O ,  KC_P , KC_BSLS,
       KC_LCTL,  KC_A ,  KC_S   ,  KC_D  ,   KC_F ,   KC_G ,               KC_0   ,       KC_0       ,          KC_H ,  KC_J ,  KC_K ,   KC_L ,KC_SCLN, KC_QUOT,
-      KC_LSFT , KC_Z ,  KC_X   ,  KC_C  ,   KC_V ,   KC_B , KC_LBRC, OSL(_LEFTY_OS_MO),    MO(_FUNCTIONS), KC_RBRC, KC_N ,  KC_M ,KC_COMM, KC_DOT ,KC_SLSH, KC_ENT,
-                            TD(TD_HM_PU), KC_LGUI, KC_LALT, KC_SPC , MO(_TEMP1)  ,    MO(_NUMPAD)   , KC_SPC ,QK_REP, KC_APP, TD(TD_EN_PD),
+      KC_LSFT , KC_Z ,  KC_X   ,  KC_C  ,   KC_V ,   KC_B , KC_LBRC,OSL(_LEFTY_OS_MO),MO(_FUNCTIONS), KC_RBRC, KC_N ,  KC_M ,KC_COMM, KC_DOT ,KC_SLSH, KC_ENT,
+                            TD(TD_HM_PU), KC_LGUI, KC_LALT, KC_SPC , MO(_SYMBOL)  ,    MO(_NUMPAD)   , KC_SPC ,QK_REP, KC_APP, TD(TD_EN_PD),
 
       KC_0   , KC_0   , KC_0   , KC_0   ,    KC_0   ,                            KC_0   , KC_0   , KC_0   , KC_0   ,    KC_0
     ),
@@ -315,7 +337,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       KC_TAB  , KC_B ,  KC_Y   ,  KC_O  ,   KC_U ,  KC_DOT,               KC_0   ,       KC_0       ,        KC_BSLS,  KC_L ,  KC_D ,   KC_W ,  KC_V , KC_Z,
       KC_LCTL , KC_C ,  KC_I   ,  KC_E  ,   KC_A , KC_COMM,               KC_0   ,       KC_0       ,        KC_QUOT,  KC_H ,  KC_T ,   KC_S ,  KC_N , KC_Q,
       KC_LSFT , KC_G ,  KC_X   ,  KC_J  ,   KC_K , KC_SCLN, KC_LBRC, OSL(_LEFTY_OS_MO_ENGRAM),    MO(_FUNCTIONS), KC_RBRC, KC_SLSH ,  KC_R , KC_M, KC_F,KC_P, KC_ENT,
-                            TD(TD_HM_PU), KC_LGUI, KC_LALT, KC_SPC , MO(_TEMP1)  ,    MO(_NUMPAD)   , KC_SPC ,QK_REP, KC_APP, TD(TD_EN_PD),
+                            TD(TD_HM_PU), KC_LGUI, KC_LALT, KC_SPC , MO(_SYMBOL)  ,    MO(_NUMPAD)   , KC_SPC ,QK_REP, KC_APP, TD(TD_EN_PD),
 
       KC_0   , KC_0   , KC_0   , KC_0   ,    KC_0   ,                            KC_0   , KC_0   , KC_0   , KC_0   ,    KC_0
     ),
@@ -327,6 +349,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * Idea: extend the numbers into two rows across where the right hand would naturally be
  * For numpad actions
  *
+ * Note: KC_PEQL is not handled by most, if not all, applications
+ *
  * ,-------------------------------------------.      ,------.  ,------.      ,-------------------------------------------.
  * |        |      |      |      |      |      |      |      |  |      |      | CAPSL| NUML | SCRLL|  (   |  )   | Delete |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
@@ -334,7 +358,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
  * |  TRNS  |      |      |      |      |      |      |      |  |      |      |  NP. |  NP0 |  NP1 |  NP2 | NP3  | NP4    |
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
- * |  TRNS  |      |      |      |      |      |      |      |  |      |      | RSFT |  - _ |  = + |  NP/ | NP*  | NPENT  |
+ * |  TRNS  |      |      |      |      |      |      |      |  |      |      | =/=+ |  NP- |  NP+ |  NP/ | NP*  | NPENT  |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
  *                        |      | TRNS | TRNS |      |      |  | TRNS | Left |  Up  | Down |Right |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
@@ -346,9 +370,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
      [_NUMPAD] = LAYOUT_myr(
       _______, _______, _______, _______, _______, _______,          _______, _______,          KC_CAPS  , KC_NUM , KC_SCRL, KC_LPRN, KC_RPRN, KC_DEL,
-      KC_TRNS, _______, _______, _______, _______, _______,          _______, _______,          KC_CIRC  , KC_P5  , KC_P6  , KC_P7  , KC_P8  , KC_9,
-      KC_TRNS, _______, _______, _______, _______, _______,          _______, _______,          KC_PDOT  , KC_P0  , KC_P1  , KC_P2  , KC_P3  , KC_4,
-      KC_TRNS, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_RSFT  , KC_MINS, KC_EQL, KC_PSLS, KC_PAST, KC_PENT,
+      KC_TRNS, _______, _______, _______, _______, _______,          _______, _______,          KC_CIRC  , KC_P5  , KC_P6  , KC_P7  , KC_P8  , KC_P9,
+      KC_TRNS, _______, _______, _______, _______, _______,          _______, _______,          KC_PDOT  , KC_P0  , KC_P1  , KC_P2  , KC_P3  , KC_P4,
+      KC_TRNS, _______, _______, _______, _______, _______, _______, _______, _______, _______,TD(TD_EQL), KC_PMNS, KC_PPLS, KC_PSLS, KC_PAST, KC_PENT,
                                  _______, KC_TRNS, KC_TRNS, _______, _______, KC_TRNS, KC_LEFT, KC_UP  , KC_DOWN, KC_RIGHT,
 
       _______, _______, _______, _______,          _______,                   _______, _______, _______, _______,          _______
@@ -417,11 +441,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */ 
     // tap-dance lefty qwerty
     [_LEFTY_TD] = LAYOUT_myr(
-      TD(TD_BS_DL), TD(TD_1_6), TD(TD_2_7), TD(TD_3_8), TD(TD_4_9), TD(TD_5_0),                   _______, _______,          _______, _______, _______, _______, _______, _______,
-      KC_TRNS     , TD(TD_Q_Y), TD(TD_W_U), TD(TD_E_I), TD(TD_R_O), TD(TD_T_P),                   _______, _______,          _______, _______, _______, _______, _______, _______,
-      KC_TRNS     , TD(TD_A_H), TD(TD_S_J), TD(TD_D_K), TD(TD_F_L), TD(TD_G_g),                   _______, _______,          _______, _______, _______, _______, _______, _______,
-      KC_TRNS     , TD(TD_Z_N), TD(TD_X_M), TD(TD_C_c), TD(TD_V_v), TD(TD_B_b), TD(TD_LB_RB) , TG(_LEFTY_TD), _______, _______, _______, _______, _______, _______, _______, _______,
-                                            _______   , KC_TRNS   , KC_TRNS   , KC_TRNS   , KC_ENT       , _______, _______, _______, _______, _______,
+      TD(TD_BS_DL), TD(TD_1_6), TD(TD_2_7), TD(TD_3_8), TD(TD_4_9), TD(TD_5_0),                     _______, _______,          _______, _______, _______, _______, _______, _______,
+      KC_TRNS     , TD(TD_Q_Y), TD(TD_W_U), TD(TD_E_I), TD(TD_R_O), TD(TD_T_P),                     _______, _______,          _______, _______, _______, _______, _______, _______,
+      KC_TRNS     , TD(TD_A_H), TD(TD_S_J), TD(TD_D_K), TD(TD_F_L), TD(TD_G_g),                     _______, _______,          _______, _______, _______, _______, _______, _______,
+      KC_TRNS     , TD(TD_Z_N), TD(TD_X_M), TD(TD_C_c), TD(TD_V_v), TD(TD_B_b), TD(TD_LB_RB), TG(_LEFTY_TD), _______, _______, _______, _______, _______, _______, _______, _______,
+                                            _______   , KC_TRNS   , KC_TRNS   , KC_TRNS     , KC_ENT       , _______, _______, _______, _______, _______,
 
       _______, _______, _______, _______,          _______,                   _______, _______, _______, _______,          _______
     ),
@@ -458,42 +482,38 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     // tap-dance lefty, engram
     [_LEFTY_TD_ENGRAM] = LAYOUT_myr(
-      TD(TD_BS_DL), TD(TD_1_6), TD(TD_2_7), TD(TD_3_8), TD(TD_4_9), TD(TD_5_0),                   _______, _______,          _______, _______, _______, _______, _______, _______,
-      KC_TRNS     , TD(TD_B_L), TD(TD_Y_D), TD(TD_O_W), TD(TD_U_V), TD(TD_z_Z),                   _______, _______,          _______, _______, _______, _______, _______, _______,
-      KC_TRNS     , TD(TD_C_H), TD(TD_I_T), TD(TD_E_S), TD(TD_A_N), TD(TD_q_Q),                   _______, _______,          _______, _______, _______, _______, _______, _______,
+      TD(TD_BS_DL), TD(TD_1_6), TD(TD_2_7), TD(TD_3_8), TD(TD_4_9), TD(TD_5_0)    ,                _______             , _______,          _______, _______, _______, _______, _______, _______,
+      KC_TRNS     , TD(TD_B_L), TD(TD_Y_D), TD(TD_O_W), TD(TD_U_V), TD(TD_z_Z)    ,                _______             , _______,          _______, _______, _______, _______, _______, _______,
+      KC_TRNS     , TD(TD_C_H), TD(TD_I_T), TD(TD_E_S), TD(TD_A_N), TD(TD_q_Q)    ,                _______             , _______,          _______, _______, _______, _______, _______, _______,
       KC_TRNS     , TD(TD_G_R), TD(TD_X_M), TD(TD_J_F), TD(TD_K_P), TD(TD_CLN_APS), TD(TD_LB_RB) , TG(_LEFTY_TD_ENGRAM), _______, _______, _______, _______, _______, _______, _______, _______,
-                                            _______   , KC_TRNS   , KC_TRNS   , KC_TRNS   , KC_ENT       , _______, _______, _______, _______, _______,
+                                            _______   , KC_TRNS   , KC_TRNS       , KC_TRNS      , KC_ENT              , _______, _______, _______, _______, _______,
 
       _______, _______, _______, _______,          _______,                   _______, _______, _______, _______,          _______
     ),
     // one-shot/MO lefty engram
     [_LEFTY_OS_MO_ENGRAM] = LAYOUT_myr(
-      TD(TD_BS_DL), KC_6 ,  KC_7 ,  KC_8 ,   KC_9 ,  KC_0 ,          _______, _______,          _______, _______, _______, _______, _______, _______,
-      KC_TRNS     , KC_L ,  KC_D ,  KC_W ,   KC_V ,  KC_Z ,          _______, _______,          _______, _______, _______, _______, _______, _______,
-      KC_TRNS     , KC_H ,  KC_T ,  KC_S ,   KC_N ,  KC_Q ,          _______, _______,          _______, _______, _______, _______, _______, _______,
+      TD(TD_BS_DL), KC_6 ,  KC_7 ,  KC_8 ,   KC_9 ,  KC_0 ,          _______                , _______,        _______, _______, _______, _______, _______, _______,
+      KC_TRNS     , KC_L ,  KC_D ,  KC_W ,   KC_V ,  KC_Z ,          _______                , _______,        _______, _______, _______, _______, _______, _______,
+      KC_TRNS     , KC_H ,  KC_T ,  KC_S ,   KC_N ,  KC_Q ,          _______                , _______,        _______, _______, _______, _______, _______, _______,
       KC_TRNS     , KC_R ,  KC_M ,  KC_F ,   KC_P ,KC_QUOT, KC_RBRC, TG(_LEFTY_OS_MO_ENGRAM), _______, _______, _______, _______, _______, _______, _______, _______,
-                                  _______, KC_TRNS,KC_TRNS, KC_TRNS, KC_ENT , _______, _______, _______, _______, _______,
+                                  _______, KC_TRNS,KC_TRNS, KC_TRNS, KC_ENT                 , _______, _______, _______, _______, _______,
 
       _______, _______, _______, _______,          _______,                   _______, _______, _______, _______,          _______
     ),
 
-// TODO: get creative with this layers, what else might I be able to use this for?
-// TODO: what if this was delegated as the symbol pad?
 /*
- * Layer template - LAYOUT_myr
- *
- * Layer to access tilde/backtick and some other layers
+ * Layer: symbol pad
  *
  * ,-------------------------------------------.      ,------.  ,------.      ,-------------------------------------------.
- * |  ` ~   |  DF  |  DF  |      |      |      |      |      |  |      |      |      |      |      |      |      |        |
+ * |  ` ~   |  @   |  #   |  $   |  ^   | TD?: |      |      |  |      |      |      |      |      |      |      |        |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * |        |      |      |      |      |      |      |      |  |      |      |      |      |      |      |      |        |
+ * |        |  ; : |  _   | TD<> | TD[] | TD{} |      |      |  |      |      |      |      |      |      |      |        |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * |        |      |      |      |      |  TG  |      |      |  |      |      |      |      |      |      |      |        |
+ * | RCTRL  |  !   | - _  |  +   | = +  | TD() |      |      |  |      |      |      |      |      |      |      |        |
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
- * |        |      |      |      |      |      |      |      |  |      |      |      |      |      |      |      |        |
+ * | RSHFT  |  %   | TD/\ |  *   |  &   |  |   |      |      |  |      |      |      |      |      |      |      |        |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        | LEFT | UP   | DOWN | RGHT | TRNS |  |      |      |      |      |      |
+ *                        | RPT  |      |      |      | TRNS |  |      |      |      |      |      |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  *
@@ -501,12 +521,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |        |      |      |      |      |      |                |      |      |      |      |      |      |
  * `-----------------------------'      `------'                `---------------------------'      '------'
  */
-    [_TEMP1] = LAYOUT_myr(
-      KC_GRV , DF(QWERTY), DF(ENGRAM), _______, _______, _______,          _______, _______,          _______, _______, _______, _______, _______, _______,
-      _______, _______, _______, _______, _______, _______,          _______, _______,          _______, _______, _______, _______, _______, _______,
-      _______, _______, _______, _______, _______, TG(GM_CT),        _______, _______,          _______, _______, _______, _______, _______, _______,
-      _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-                                 KC_LEFT, KC_UP  , KC_DOWN,KC_RIGHT, KC_TRNS, _______, _______, _______, _______, _______,
+    [_SYMBOL] = LAYOUT_myr(
+      KC_GRV , KC_AT  , KC_HASH   , KC_DLR      , KC_CIRC     , TD(TD_TERN) ,           _______, _______,          _______, _______, _______, _______, _______, _______,
+      _______, KC_SCLN, KC_UNDS   , TD(TD_ANGBR), TD(TD_SQRBR), TD(TD_CRLBR),           _______, _______,          _______, _______, _______, _______, _______, _______,
+      KC_RCTL, KC_EXLM, KC_MINS   , KC_PLUS     , KC_EQL      , TD(TD_PAREN),           _______, _______,          _______, _______, _______, _______, _______, _______,
+      KC_RSFT, KC_PERC, TD(TD_SLS), KC_ASTR     , KC_AMPR     , KC_PIPE     , TG(GM_CT), TG_TD  , _______, _______, _______, _______, _______, _______, _______, _______,
+                                    QK_REP      , DF(_QWERTY) , DF(_ENGRAM) , _______  , KC_TRNS, _______, _______, _______, _______, _______,
 
       _______, _______, _______, _______,          _______,                   _______, _______, _______, _______,          _______
     ),
@@ -528,9 +548,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
  * | TRNS   |  2   |  A   |  W   |  D   |  0   |      |      |  |      |      |      | LFT  | UP   | RGT  |      |        |
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
- * | TRNS   |  1   |  Z   |  S   |  C   |  V   | LALT |  TG  |  |      |      |      |      | DN   |      |      | TG     |
+ * | TRNS   |  1   |  Z   |  S   |  C   |  V   |  R   |  TG  |  |      |      |      |      | DN   |      |      | TG     |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        |  T   |  E   |  R   | TRNS |  MO  |  |      |      |      |      |      |
+ *                        |  T   |  E   | TRNS | TRNS |  MO  |  |      | LFT  |  UP  |  DN  | RGT  |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  *
@@ -542,8 +562,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       KC_TRNS, KC_4   , KC_5   , KC_6   , KC_7   , KC_8   ,          _______  , _______,          _______, _______, _______, _______, _______, _______,
       KC_TRNS, KC_3   , KC_Q   , KC_E   , KC_R   , KC_9   ,          _______  , _______,          _______, _______, _______, _______, _______, _______,
       KC_TRNS, KC_2   , KC_A   , KC_W   , KC_D   , KC_0   ,          _______  , _______,          _______, KC_LEFT, KC_UP  ,KC_RIGHT, _______, _______,
-      KC_TRNS, KC_1   , KC_Z   , KC_S   , KC_C   , KC_V   , KC_LALT, TG(GM_CT), _______, _______, _______, _______, KC_DOWN, _______, _______, TG(GM_CT),
-                                 KC_T   , KC_E   , KC_R   , KC_TRNS, MO(GM_EX), _______, _______, _______, _______, _______,
+      KC_TRNS, KC_1   , KC_Z   , KC_S   , KC_C   , KC_V   , KC_R   , TG(GM_CT), _______, _______, _______, _______, KC_DOWN, _______, _______, TG(GM_CT),
+                                 KC_T   , KC_E   , KC_TRNS, KC_TRNS, MO(GM_EX), _______, KC_LEFT, KC_UP  , KC_DOWN,KC_RIGHT,
 
       _______, _______, _______, _______,          _______,                   _______, _______, _______, _______,          _______
     ),
