@@ -12,8 +12,10 @@ Features:
 
 * Caps word
 
-* Numpad-style numberpad in a layer
+* Flat numberpad
 
-* Numpad-style function keys
+* Flat function keys
+
+* Symbol layer, making use of combo keys
 
 * Changing RGB lights to indicate functions or layers

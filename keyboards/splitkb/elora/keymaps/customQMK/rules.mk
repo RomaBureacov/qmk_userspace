@@ -35,14 +35,10 @@ EXTRAKEY_ENABLE = yes      # Audio and system control
 # N-key rollover instead of 6-key rollover
 NKRO_ENABLE = yes          # Enable N-Key Rollover
 
-# Caps word
 CAPS_WORD_ENABLE = yes
-
-# Tap dance
 TAP_DANCE_ENABLE = yes
-
-# Repeat key
 REPEAT_KEY_ENABLE = yes
+COMBO_ENABLE = yes
 
 # RGB
 # RGB_MATRIX_DRIVER = ws2812

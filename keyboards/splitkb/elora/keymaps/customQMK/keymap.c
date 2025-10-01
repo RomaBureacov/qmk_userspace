@@ -16,6 +16,7 @@
 
 // TODO: upload this keymap to github https://docs.qmk.fm/newbs_external_userspace
 
+#include <stdint.h>
 #include "action_layer.h"
 #include "caps_word.h"
 #include "config.h"
@@ -52,6 +53,25 @@ enum custom_keycodes {
   TG_TD = SAFE_RANGE, // toggle tap-dance lefty
 };
 
+enum {
+  COMBO_BRACKET,
+  COMBO_PAREN,
+  COMBO_ANGLE,
+  COMBO_CURLY,
+};
+
+const uint16_t PROGMEM combo_bracket[] =      {KC_LBRC, KC_AMPR, COMBO_END};
+const uint16_t PROGMEM combo_parenthesis[] =  {KC_LPRN, KC_PIPE, COMBO_END};
+const uint16_t PROGMEM combo_angle[] =        {KC_LT, KC_EQL, COMBO_END};
+const uint16_t PROGMEM combo_curly[] =        {KC_LCBR, KC_QUES, COMBO_END};
+
+combo_t key_combos[] = {
+  [COMBO_BRACKET] = COMBO(combo_bracket, KC_RBRC),
+  [COMBO_PAREN] = COMBO(combo_parenthesis, KC_RPRN),
+  [COMBO_ANGLE] = COMBO(combo_angle, KC_GT),
+  [COMBO_CURLY] = COMBO(combo_curly, KC_RCBR),
+};
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch(keycode) {
     case TG_TD:
@@ -59,7 +79,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         if (IS_LAYER_ON_STATE(default_layer_state, _QWERTY)) layer_on(_LEFTY_TD);
         else if (IS_LAYER_ON_STATE(default_layer_state, _ENGRAM)) layer_on(_LEFTY_TD_ENGRAM);
       } else; // on key up
-    break;
+      break;
+  }
+
+  return true;
+};
+
+bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode, keyrecord_t *record) {
+  switch(combo_index) {
+    case COMBO_BRACKET:
+    case COMBO_PAREN:
+    case COMBO_ANGLE:
+    case COMBO_CURLY:
+      if (!layer_state_is(_SYMBOL))
+        return false;
+      break;
   }
 
   return true;
@@ -252,14 +286,6 @@ tap_dance_action_t tap_dance_actions[] = {
 
   [TD_EQL] = ACTION_TAP_DANCE_DOUBLE(KC_PEQL, KC_EQL),
 
-  // symbol layer
-  [TD_PAREN] = ACTION_TAP_DANCE_DOUBLE(KC_LPRN, KC_RPRN),
-  [TD_CRLBR] = ACTION_TAP_DANCE_DOUBLE(KC_LCBR, KC_RCBR),
-  [TD_SQRBR] = ACTION_TAP_DANCE_DOUBLE(KC_LBRC, KC_RBRC),
-  [TD_ANGBR] = ACTION_TAP_DANCE_DOUBLE(KC_LABK, KC_RABK),
-  [TD_SLS] = ACTION_TAP_DANCE_DOUBLE(KC_SLSH, KC_BSLS),
-  [TD_TERN] = ACTION_TAP_DANCE_DOUBLE(KC_QUES, KC_COLN),
-
 };
 
 // Swap hands
@@ -388,7 +414,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * Double-tap lefty activated through here
  * 
  * ,-------------------------------------------.      ,------.  ,------.      ,-------------------------------------------.
- * |        |      |      |      |      |      |      |      |  |      |      | INSR |  F10 |  F11 |  F12 | VOL+-| PL/PS  |
+ * |        | DF QW| DF EN|      |      |      |      |      |  |      |      | INSR |  F10 |  F11 |  F12 | VOL+-| PL/PS  |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
  * |        |      |      |      |      |      |      |      |  |      |      | SCLK |  F5  |  F6  |  F7  | F8   | F9     |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
@@ -503,17 +529,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /*
  * Layer: symbol pad
- *
+ *                        /- Combo col -\
  * ,-------------------------------------------.      ,------.  ,------.      ,-------------------------------------------.
- * |  ` ~   |  @   |  #   |  $   |  ^   | TD?: |      |      |  |      |      |      |      |      |      |      |        |
+ * |  ` ~   |  *   |  #   |  [   |  &   |      |      |      |  |      |      |      |      |      |      |      |        |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * |        |  ; : |  _   | TD<> | TD[] | TD{} |      |      |  |      |      |      |      |      |      |      |        |
+ * |        |  +   |  @   |  (   |  |   |      |      |      |  |      |      |      |      |      |      |      |        |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * | RCTRL  |  !   | - _  |  +   | = +  | TD() |      |      |  |      |      |      |      |      |      |      |        |
+ * | RCTRL  |  -   |  !   |  <   | = +  |  ; : |      |      |  |      |      |      |      |      |      |      |        |
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
- * | RSHFT  |  %   | TD/\ |  *   |  &   |  |   |      |      |  |      |      |      |      |      |      |      |        |
+ * | RSHFT  |  /   |  %   |  {   |  ?   |  :   | PRSCR| TG GM|  |      |      |      |      |      |      |      |        |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        | RPT  |      |      |      | TRNS |  |      |      |      |      |      |
+ *                        | LEFT | DOWN |  UP  | RGHT | TRNS |  |      |      |      |      |      |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  *
@@ -522,11 +548,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------'      `------'                `---------------------------'      '------'
  */
     [_SYMBOL] = LAYOUT_myr(
-      KC_GRV , KC_AT  , KC_HASH   , KC_DLR      , KC_CIRC     , TD(TD_TERN) ,           _______, _______,          _______, _______, _______, _______, _______, _______,
-      _______, KC_SCLN, KC_UNDS   , TD(TD_ANGBR), TD(TD_SQRBR), TD(TD_CRLBR),           _______, _______,          _______, _______, _______, _______, _______, _______,
-      KC_RCTL, KC_EXLM, KC_MINS   , KC_PLUS     , KC_EQL      , TD(TD_PAREN),           _______, _______,          _______, _______, _______, _______, _______, _______,
-      KC_RSFT, KC_PERC, TD(TD_SLS), KC_ASTR     , KC_AMPR     , KC_PIPE     , TG(GM_CT), TG_TD  , _______, _______, _______, _______, _______, _______, _______, _______,
-                                    QK_REP      , DF(_QWERTY) , DF(_ENGRAM) , _______  , KC_TRNS, _______, _______, _______, _______, _______,
+      KC_GRV , KC_ASTR, KC_HASH, KC_LBRC, KC_AMPR, _______,          _______, _______,          _______, _______, _______, _______, _______, _______,
+      _______, KC_PLUS, KC_AT  , KC_LPRN, KC_PIPE, _______,          _______, _______,          _______, _______, _______, _______, _______, _______,
+      KC_RCTL, KC_MINS, KC_EXLM, KC_LT  , KC_EQL , KC_SCLN,          _______, _______,          _______, _______, _______, _______, _______, _______,
+      KC_RSFT, KC_SLSH, KC_PERC, KC_LCBR, KC_QUES, KC_COLN, KC_PSCR, TG(GM_CT), _______, _______, _______, _______, _______, _______, _______, _______,
+                                 KC_LEFT, KC_DOWN, KC_UP  , KC_RIGHT, KC_TRNS, _______, _______, _______, _______, _______,
 
       _______, _______, _______, _______,          _______,                   _______, _______, _______, _______,          _______
     ),
