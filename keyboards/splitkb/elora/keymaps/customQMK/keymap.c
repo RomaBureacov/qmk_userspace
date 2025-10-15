@@ -54,22 +54,26 @@ enum custom_keycodes {
 };
 
 enum {
+  // symbols layer
   COMBO_BRACKET,
   COMBO_PAREN,
   COMBO_ANGLE,
   COMBO_CURLY,
+  COMBO_BACKSLS,
 };
 
 const uint16_t PROGMEM combo_bracket[] =      {KC_LBRC, KC_AMPR, COMBO_END};
 const uint16_t PROGMEM combo_parenthesis[] =  {KC_LPRN, KC_PIPE, COMBO_END};
-const uint16_t PROGMEM combo_angle[] =        {KC_LT, KC_EQL, COMBO_END};
+const uint16_t PROGMEM combo_angle[] =        {KC_LT  , KC_EQL , COMBO_END};
 const uint16_t PROGMEM combo_curly[] =        {KC_LCBR, KC_QUES, COMBO_END};
+const uint16_t PROGMEM combo_backsls[] =      {KC_SLSH, KC_PERC, COMBO_END};
 
 combo_t key_combos[] = {
-  [COMBO_BRACKET] = COMBO(combo_bracket, KC_RBRC),
-  [COMBO_PAREN] = COMBO(combo_parenthesis, KC_RPRN),
-  [COMBO_ANGLE] = COMBO(combo_angle, KC_GT),
-  [COMBO_CURLY] = COMBO(combo_curly, KC_RCBR),
+  [COMBO_BRACKET]   = COMBO(combo_bracket, KC_RIGHT_BRACKET),
+  [COMBO_PAREN]     = COMBO(combo_parenthesis, KC_RIGHT_PAREN),
+  [COMBO_ANGLE]     = COMBO(combo_angle, KC_RIGHT_ANGLE_BRACKET),
+  [COMBO_CURLY]     = COMBO(combo_curly, KC_RIGHT_CURLY_BRACE),
+  [COMBO_BACKSLS]   = COMBO(combo_backsls, KC_BACKSLASH),
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -91,6 +95,7 @@ bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode
     case COMBO_PAREN:
     case COMBO_ANGLE:
     case COMBO_CURLY:
+    case COMBO_BACKSLS:
       if (!layer_state_is(_SYMBOL))
         return false;
       break;
@@ -178,10 +183,29 @@ void setLED(unsigned int LED_indices[], unsigned int red, unsigned int green, un
 }
 
 bool rgb_matrix_indicators_user() {
-  if (IS_LAYER_ON(_NUMPAD))         setLED((unsigned int[]){9, 10, 11}, 255, 255, 0, 3); // yellow on bottom of right
-  if (IS_LAYER_ON(_FUNCTIONS))      setLED((unsigned int[]){6, 7, 8}, 255, 255, 0, 3); // yellow on top of right
-  if (IS_LAYER_ON(_GAMING_EXTRAS))  setLED((unsigned int[]){0, 1, 2, 3}, 100, 0, 255, 4); // purple on outer rim of left
-  if (IS_LAYER_ON(_SYMBOL))          setLED((unsigned int[]){5}, 255, 255, 0, 1); // yellow on LED 5
+  if (IS_LAYER_ON(_NUMPAD))         
+    setLED(
+      (unsigned int[]){9, 10, 11},
+      255, 255, 0, 3
+    ); // yellow on bottom of right
+  if (IS_LAYER_ON(_FUNCTIONS))      
+    setLED(
+      (unsigned int[]){6, 7, 8},
+      255, 255, 0, 
+      3
+    ); // yellow on top of right
+  if (IS_LAYER_ON(_GAMING_EXTRAS))  
+    setLED(
+      (unsigned int[]){0, 1, 2, 3}, 
+      100, 0, 255, 
+      4
+    ); // purple on outer rim of left
+  if (IS_LAYER_ON(_SYMBOL))         
+    setLED(
+      (unsigned int[]){5}, 
+      255, 255, 0, 
+      1
+    ); // yellow on LED 5
   return true;
 }
 
@@ -531,15 +555,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * Layer: symbol pad
  *                        /- Combo col -\
  * ,-------------------------------------------.      ,------.  ,------.      ,-------------------------------------------.
- * |  ` ~   |  *   |  #   |  [   |  &   |      |      |      |  |      |      |      |      |      |      |      |        |
+ * |  ` ~   |  *   |  &   |  [   |  @   |  ^   |      |      |  |      |      |      |      |      |      |      |        |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
- * |        |  +   |  @   |  (   |  |   |      |      |      |  |      |      |      |      |      |      |      |        |
+ * |        |  +   |  |   |  (   |  $   |  #   |      |      |  |      |      |      |      |      |      |      |        |
  * |--------+------+------+------+------+------|      |------|  |------|      |------+------+------+------+------+--------|
  * | RCTRL  |  -   |  !   |  <   | = +  |  ; : |      |      |  |      |      |      |      |      |      |      |        |
  * |--------+------+------+------+------+------+------+------|  |------|------+------+------+------+------+------+--------|
  * | RSHFT  |  /   |  %   |  {   |  ?   |  :   | PRSCR| TG GM|  |      |      |      |      |      |      |      |        |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        | LEFT | DOWN |  UP  | RGHT | TRNS |  |      |      |      |      |      |
+ *           \- /+% = \ -/| LEFT | DOWN |  UP  | RGHT | TRNS |  |      |      |      |      |      |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  *
@@ -548,8 +572,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------'      `------'                `---------------------------'      '------'
  */
     [_SYMBOL] = LAYOUT_myr(
-      KC_GRV , KC_ASTR, KC_HASH, KC_LBRC, KC_AMPR, _______,          _______, _______,          _______, _______, _______, _______, _______, _______,
-      _______, KC_PLUS, KC_AT  , KC_LPRN, KC_PIPE, _______,          _______, _______,          _______, _______, _______, _______, _______, _______,
+      KC_GRV , KC_ASTR, KC_AMPR, KC_LBRC, KC_AT  , KC_CIRC,          _______, _______,          _______, _______, _______, _______, _______, _______, 
+      _______, KC_PLUS, KC_PIPE, KC_LPRN, KC_DLR , KC_HASH,          _______, _______,          _______, _______, _______, _______, _______, _______,
       KC_RCTL, KC_MINS, KC_EXLM, KC_LT  , KC_EQL , KC_SCLN,          _______, _______,          _______, _______, _______, _______, _______, _______,
       KC_RSFT, KC_SLSH, KC_PERC, KC_LCBR, KC_QUES, KC_COLN, KC_PSCR, TG(GM_CT), _______, _______, _______, _______, _______, _______, _______, _______,
                                  KC_LEFT, KC_DOWN, KC_UP  , KC_RIGHT, KC_TRNS, _______, _______, _______, _______, _______,
