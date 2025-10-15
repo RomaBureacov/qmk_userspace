@@ -17,12 +17,14 @@
 // TODO: upload this keymap to github https://docs.qmk.fm/newbs_external_userspace
 
 #include <stdint.h>
+#include "action.h"
 #include "action_layer.h"
 #include "caps_word.h"
 #include "config.h"
 #include "keycodes.h"
 #include "keymap_us.h"
 #include "process_tap_dance.h"
+#include "progmem.h"
 #include "quantum.h"
 #include "quantum_keycodes.h"
 #include "rgb_matrix.h"
@@ -51,6 +53,9 @@ enum layers {
 
 enum custom_keycodes {
   TG_TD = SAFE_RANGE, // toggle tap-dance lefty
+  // left and right space, for combo into repeat key
+  CC_LSPC,
+  CC_RSPC,
 };
 
 enum {
@@ -60,6 +65,9 @@ enum {
   COMBO_ANGLE,
   COMBO_CURLY,
   COMBO_BACKSLS,
+
+  // other
+  COMBO_LRSPACE,
 };
 
 const uint16_t PROGMEM combo_bracket[] =      {KC_LBRC, KC_AMPR, COMBO_END};
@@ -67,13 +75,18 @@ const uint16_t PROGMEM combo_parenthesis[] =  {KC_LPRN, KC_PIPE, COMBO_END};
 const uint16_t PROGMEM combo_angle[] =        {KC_LT  , KC_EQL , COMBO_END};
 const uint16_t PROGMEM combo_curly[] =        {KC_LCBR, KC_QUES, COMBO_END};
 const uint16_t PROGMEM combo_backsls[] =      {KC_SLSH, KC_PERC, COMBO_END};
+const uint16_t PROGMEM combo_lrspace[] =      {CC_LSPC, CC_RSPC, COMBO_END};
 
 combo_t key_combos[] = {
+  // symbols layer
   [COMBO_BRACKET]   = COMBO(combo_bracket, KC_RIGHT_BRACKET),
   [COMBO_PAREN]     = COMBO(combo_parenthesis, KC_RIGHT_PAREN),
   [COMBO_ANGLE]     = COMBO(combo_angle, KC_RIGHT_ANGLE_BRACKET),
   [COMBO_CURLY]     = COMBO(combo_curly, KC_RIGHT_CURLY_BRACE),
   [COMBO_BACKSLS]   = COMBO(combo_backsls, KC_BACKSLASH),
+
+  // other
+  [COMBO_LRSPACE]   = COMBO(combo_lrspace, QK_REPEAT_KEY),
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -84,6 +97,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         else if (IS_LAYER_ON_STATE(default_layer_state, _ENGRAM)) layer_on(_LEFTY_TD_ENGRAM);
       } else; // on key up
       break;
+    case CC_LSPC:
+    case CC_RSPC:
+      if (record->event.pressed) register_code(KC_SPACE);
+      else unregister_code(KC_SPACE);
   }
 
   return true;
@@ -98,7 +115,6 @@ bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode
     case COMBO_BACKSLS:
       if (!layer_state_is(_SYMBOL))
         return false;
-      break;
   }
 
   return true;
@@ -354,7 +370,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       KC_TAB  , KC_Q ,  KC_W   ,  KC_E  ,   KC_R ,   KC_T ,               KC_0   ,       KC_0       ,          KC_Y ,  KC_U ,  KC_I ,   KC_O ,  KC_P , KC_BSLS,
       KC_LCTL,  KC_A ,  KC_S   ,  KC_D  ,   KC_F ,   KC_G ,               KC_0   ,       KC_0       ,          KC_H ,  KC_J ,  KC_K ,   KC_L ,KC_SCLN, KC_QUOT,
       KC_LSFT , KC_Z ,  KC_X   ,  KC_C  ,   KC_V ,   KC_B , KC_LBRC,OSL(_LEFTY_OS_MO),MO(_FUNCTIONS), KC_RBRC, KC_N ,  KC_M ,KC_COMM, KC_DOT ,KC_SLSH, KC_ENT,
-                            TD(TD_HM_PU), KC_LGUI, KC_LALT, KC_SPC , MO(_SYMBOL)  ,    MO(_NUMPAD)   , KC_SPC ,QK_REP, KC_APP, TD(TD_EN_PD),
+                            TD(TD_HM_PU), KC_LGUI, KC_LALT, CC_LSPC, MO(_SYMBOL)  ,    MO(_NUMPAD)  , CC_RSPC,QK_REP, KC_APP, TD(TD_EN_PD),
 
       KC_0   , KC_0   , KC_0   , KC_0   ,    KC_0   ,                            KC_0   , KC_0   , KC_0   , KC_0   ,    KC_0
     ),
@@ -387,7 +403,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       KC_TAB  , KC_B ,  KC_Y   ,  KC_O  ,   KC_U ,  KC_DOT,               KC_0   ,       KC_0       ,        KC_BSLS,  KC_L ,  KC_D ,   KC_W ,  KC_V , KC_Z,
       KC_LCTL , KC_C ,  KC_I   ,  KC_E  ,   KC_A , KC_COMM,               KC_0   ,       KC_0       ,        KC_QUOT,  KC_H ,  KC_T ,   KC_S ,  KC_N , KC_Q,
       KC_LSFT , KC_G ,  KC_X   ,  KC_J  ,   KC_K , KC_SCLN, KC_LBRC, OSL(_LEFTY_OS_MO_ENGRAM),    MO(_FUNCTIONS), KC_RBRC, KC_SLSH ,  KC_R , KC_M, KC_F,KC_P, KC_ENT,
-                            TD(TD_HM_PU), KC_LGUI, KC_LALT, KC_SPC , MO(_SYMBOL)  ,    MO(_NUMPAD)   , KC_SPC ,QK_REP, KC_APP, TD(TD_EN_PD),
+                            TD(TD_HM_PU), KC_LGUI, KC_LALT, CC_LSPC, MO(_SYMBOL)  ,    MO(_NUMPAD)   , CC_RSPC,QK_REP, KC_APP, TD(TD_EN_PD),
 
       KC_0   , KC_0   , KC_0   , KC_0   ,    KC_0   ,                            KC_0   , KC_0   , KC_0   , KC_0   ,    KC_0
     ),
