@@ -70,8 +70,8 @@ enum {
   COMBO_LRSPACE,
 };
 
-const uint16_t PROGMEM combo_bracket[] =      {KC_LBRC, KC_AMPR, COMBO_END};
-const uint16_t PROGMEM combo_parenthesis[] =  {KC_LPRN, KC_PIPE, COMBO_END};
+const uint16_t PROGMEM combo_bracket[] =      {KC_LBRC, KC_AT  , COMBO_END};
+const uint16_t PROGMEM combo_parenthesis[] =  {KC_LPRN, KC_DLR , COMBO_END};
 const uint16_t PROGMEM combo_angle[] =        {KC_LT  , KC_EQL , COMBO_END};
 const uint16_t PROGMEM combo_curly[] =        {KC_LCBR, KC_QUES, COMBO_END};
 const uint16_t PROGMEM combo_backsls[] =      {KC_SLSH, KC_PERC, COMBO_END};
