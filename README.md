@@ -15,7 +15,7 @@ For the purpose of this documentation, here is the definition for the thumb clus
 ```
             ,-------.    ,-------.
 ,-----------|TL3|TL2|    |TR2|TR3|-----------.
-|TL7|TL6|TL5|TL4|TL1|    |TR1|TR4|TR5|TL6|TL7|
+|TL7|TL6|TL5|TL4|TL1|    |TR1|TR4|TR5|TR6|TR7|
 "-------------------'    "-------------------'
 
 ```
@@ -31,8 +31,8 @@ Keyboard makes use of the following QMK features:
 
 * Tap Dance
   * See custom lefty definition on the next section about layers
-  * TL1 is Home on single-tap, but Page Up on double-tap
-  * TL1 is End on single-tap, but Page Down on double-tap
+  * TL7 is Home on single-tap, but Page Up on double-tap
+  * TR7 is End on single-tap, but Page Down on double-tap
 
 * Layer switching
   * Switching between default layouts: [engram](https://github.com/binarybottle/engram) and QWERTY
