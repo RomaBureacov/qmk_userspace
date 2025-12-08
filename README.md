@@ -40,7 +40,7 @@ Keyboard makes use of the following QMK features:
 
 * Repeat key
   * See custom key codes about space bar
-  * Normal repeat key defined at TR3
+  * Normal repeat key defined at TR5
 
 * Custom key codes
   * Differentiates the left and right space. 
